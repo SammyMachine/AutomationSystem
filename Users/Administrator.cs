@@ -3,8 +3,6 @@ using AutomationSystemForSalesRepresentatives.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutomationSystemForSalesRepresentatives.Users
 {
@@ -49,14 +47,19 @@ namespace AutomationSystemForSalesRepresentatives.Users
             return SystemServiceController.Instance.CheckStorage();
         }
 
-        public void GetPaymentReport()
+        public void GetPaymentReport(bool flag)
         {
-            Console.WriteLine($"Отчет\n--------------\n{SystemServiceController.Instance.SendPaymentReport()}");
+            Console.WriteLine(SystemServiceController.Instance.SendPaymentReport(flag));
         }
 
         public void GetNotificationList()
         {
-            Console.WriteLine($"Список уведомлений\n--------------\n{SystemServiceController.Instance.SendNotificationList()}");
+            Console.WriteLine($"Список уведомлений\n--------------\n");
+            var list = SystemServiceController.Instance.SendNotificationList();
+            foreach (var item in list)
+            {
+                Console.WriteLine(item.ToString());
+            }
         }
 
         private sealed class RandomStringGenerator

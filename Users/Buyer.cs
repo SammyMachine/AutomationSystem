@@ -7,7 +7,7 @@ namespace AutomationSystemForSalesRepresentatives.Users
 {
     public class Buyer : User
     {
-        private string OrderID { get; set; }
+        public string OrderID { get; set; }
 
         public Buyer(string name)
         {
@@ -24,11 +24,19 @@ namespace AutomationSystemForSalesRepresentatives.Users
             SystemServiceController.Instance.GetOrder(order);
         }
 
-        public void CreatePayment(Order order)
+        public void CreatePayment(Order order, bool flag)
         {
             double cost = SystemServiceController.Instance.SendOrder(OrderID).Cost;
             Payment payment = new Payment(OrderID, cost);
-            SystemServiceController.Instance.GetPayment(payment, OrderID);
+            if (flag)
+            {
+                payment.Status = "оплачено наличными";
+            }
+            else
+            {
+                payment.Status = "оплачено онлайн";
+            }
+            SystemServiceController.Instance.GetPayment(payment, OrderID, flag);
         }
 
         public override List<List<Product>> CheckStorage()

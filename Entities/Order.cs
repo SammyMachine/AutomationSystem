@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutomationSystemForSalesRepresentatives.Models
 {
@@ -23,7 +20,7 @@ namespace AutomationSystemForSalesRepresentatives.Models
             Status = "Отправлен";
         }
 
-        private void CalculateCost()
+        public void CalculateCost()
         {
             foreach (var item in ProductList)
             {

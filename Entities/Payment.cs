@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutomationSystemForSalesRepresentatives.Models
 {
@@ -18,7 +14,6 @@ namespace AutomationSystemForSalesRepresentatives.Models
             PaymentID = Guid.NewGuid().ToString();
             BuyerID = buyerID;
             Cost = cost;
-            Status = "Отправлен";
         }
     }
 }

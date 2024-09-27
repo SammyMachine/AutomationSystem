@@ -16,11 +16,11 @@ namespace AutomationSystemForSalesRepresentatives.System
         private readonly List<Payment> paymentList = new List<Payment>();
         private List<Receipt> receiptList = new List<Receipt>();
         private readonly List<Notification> notificationList = new List<Notification>();
-        private List<User> userList = new List<User>();
+        public List<User> userList = new List<User>();
 
         public Storage Storage { get; set; }
 
-        private readonly PaymentService paymentService = new PaymentService();
+        private PaymentService paymentService;
         private readonly NotificationService notificationService = new NotificationService();
         private readonly ReportService reportService = new ReportService();
 
@@ -58,11 +58,22 @@ namespace AutomationSystemForSalesRepresentatives.System
             return order;
         }
 
-        public void GetPayment(Payment payment, string orderID)
+        public void GetPayment(Payment payment, string orderID, bool flag)
         {
-            payment.Status = "Принят в обработку";
             paymentList.Add(payment);
-            paymentService.ProcessPayment(payment);
+            if (flag)
+            {
+                paymentService = new PaymentService(new CashPaymentStrategy());
+                var rec = paymentService.ProcessPayment(payment);
+                receiptList.Add(rec);
+            }
+            else
+            {
+                paymentService = new PaymentService(new OnlinePaymentStrategy());
+                var rec = paymentService.ProcessPayment(payment);
+                receiptList.Add(rec);
+            }
+
             Console.WriteLine($"Payment {payment.PaymentID} for Order {orderID} received.");
         }
 
@@ -80,14 +91,14 @@ namespace AutomationSystemForSalesRepresentatives.System
         public void GetNotification(string SenderID, string SenderName, List<Product> products)
         {
             Console.WriteLine($"Уведомление от товароведа {SenderID} обрабатывается системой");
-            notificationList.Add(notificationService.CreateNotification(SenderID, SenderName, products));
+            notificationList.Add(notificationService.CreateOrdinaryUserNotification(SenderID, SenderName, products));
             Console.WriteLine($"Уведомление от товароведа {SenderID} сохранено.");
         }
 
         public void GetNotification(string SenderID, string SenderName, List<Product> Products, string Supplier)
         {
             Console.WriteLine($"Уведомление от торгового представителя {SenderID} обрабатывается системой");
-            notificationList.Add(notificationService.CreateNotification(SenderID, SenderName, Products, Supplier));
+            notificationList.Add(notificationService.CreateSupplierUserNotification(SenderID, SenderName, Products, Supplier));
             Console.WriteLine($"Уведомление от торгового представителя {SenderID} сохранено.");
         }
 
@@ -102,10 +113,17 @@ namespace AutomationSystemForSalesRepresentatives.System
             return userList;
         }
 
-        public Report SendPaymentReport()
+        public string SendPaymentReport(bool flag)
         {
             Console.WriteLine($"Отчет сгенерирован.");
-            return reportService.GeneratePaymentReport(receiptList);
+            if (flag)
+            {
+                return reportService.GenerateReport(receiptList, new JsonReportAdapter());
+            }
+            else
+            {
+                return reportService.GenerateReport(receiptList, new TextReportAdapter());
+            }
         }
 
         public List<Notification> SendNotificationList()
